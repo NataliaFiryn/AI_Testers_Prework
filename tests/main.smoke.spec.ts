@@ -1,18 +1,12 @@
 import { expect, test } from '@playwright/test';
+import { ContentPage } from '../pages/content.page';
+import { SwaggerPage } from '../pages/swagger.page';
 
-for (const {
-  name,
-  path,
-  title,
-  headerSelector,
-  headerText,
-  additionalText
-} of [
+for (const { name, path, title, headerText, additionalText } of [
   {
     name: 'home',
     path: '/',
     title: 'Rolnopol',
-    headerSelector: '.main-title',
     headerText: 'Rolnopol',
     additionalText: 'Futuristic Farm & Resource Management'
   },
@@ -20,7 +14,6 @@ for (const {
     name: 'alerts',
     path: '/alerts.html',
     title: 'Alerts - Rolnopol',
-    headerSelector: '.main-title',
     headerText: 'Rolnopol',
     additionalText: 'Alerts and Notifications'
   },
@@ -28,7 +21,6 @@ for (const {
     name: 'documentation',
     path: '/docs.html',
     title: 'Documentation - Rolnopol',
-    headerSelector: '.main-title',
     headerText: 'Documentation',
     additionalText: 'Rolnopol System Guide & API Reference'
   },
@@ -36,7 +28,6 @@ for (const {
     name: 'register',
     path: '/register.html',
     title: 'Register - Rolnopol',
-    headerSelector: '.main-title',
     headerText: 'Rolnopol',
     additionalText: 'Create Your User Account'
   }
@@ -45,21 +36,20 @@ for (const {
     `should load and display the ${name} page`,
     { tag: '@smoke' },
     async ({ page }) => {
-      // Arrange - use the current page configuration from the test data above
+      // Arrange
+      const contentPage = new ContentPage(page);
 
       // Act
-      const response = await page.goto(path);
+      const response = await contentPage.goto(path);
 
       // Assert
       expect(response).not.toBeNull();
       expect(response?.ok()).toBe(true);
-      await expect(page.locator('body')).toBeVisible();
+      await expect(contentPage.body).toBeVisible();
       await expect(page).toHaveTitle(title);
-      await expect(page.locator(headerSelector)).toBeVisible();
-      await expect(page.locator(headerSelector)).toHaveText(headerText);
-      await expect(
-        page.locator('header').getByText(additionalText, { exact: true })
-      ).toBeVisible();
+      await expect(contentPage.mainTitle).toBeVisible();
+      await expect(contentPage.mainTitle).toHaveText(headerText);
+      await expect(contentPage.headerText(additionalText)).toBeVisible();
     }
   );
 }
@@ -69,18 +59,18 @@ test(
   { tag: '@smoke' },
   async ({ page }) => {
     // Arrange
-    const swaggerTitle = page.frameLocator('iframe').locator('.title');
+    const swaggerPage = new SwaggerPage(page);
 
     // Act
-    const response = await page.goto('/swagger.html');
+    const response = await swaggerPage.goto();
 
     // Assert
     expect(response).not.toBeNull();
     expect(response?.ok()).toBe(true);
-    await expect(page.locator('body')).toBeVisible();
+    await expect(swaggerPage.body).toBeVisible();
     await expect(page).toHaveTitle('Rolnopol - Swagger');
 
-    await expect(swaggerTitle).toBeVisible();
-    await expect(swaggerTitle).toContainText('Rolnopol');
+    await expect(swaggerPage.swaggerTitle).toBeVisible();
+    await expect(swaggerPage.swaggerTitle).toContainText('Rolnopol');
   }
 );

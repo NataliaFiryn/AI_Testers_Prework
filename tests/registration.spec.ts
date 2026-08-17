@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { RegistrationPage } from '../pages/registration.page';
 
 test(
   'should register a new user successfully',
@@ -6,25 +7,25 @@ test(
   async ({ page }, testInfo) => {
     // Arrange
     const email = `playwright.registration.${Date.now()}.${testInfo.workerIndex}@example.com`;
-    const successBanner = page.getByRole('alert');
+    const registrationPage = new RegistrationPage(page);
 
-    await page.goto('/register.html');
+    await registrationPage.goto();
 
     // Act
-    await page.getByTestId('email-input').fill(email);
-    await page
-      .getByTestId('display-name-input')
-      .fill('Playwright Registration Test');
-    await page.getByTestId('password-input').fill('TestReg-2026!');
-
     const [registrationResponse] = await Promise.all([
       page.waitForResponse(
         (response) =>
           response.url().endsWith('/api/v1/register') &&
           response.request().method() === 'POST'
       ),
-      expect(successBanner).toContainText('Registration successful!'),
-      page.getByTestId('register-submit-btn').click()
+      expect(registrationPage.successBanner).toContainText(
+        'Registration successful!'
+      ),
+      registrationPage.register(
+        email,
+        'Playwright Registration Test',
+        'TestReg-2026!'
+      )
     ]);
 
     // Assert
