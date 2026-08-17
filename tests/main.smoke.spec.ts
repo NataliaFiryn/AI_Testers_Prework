@@ -45,8 +45,12 @@ for (const {
     `should load and display the ${name} page`,
     { tag: '@smoke' },
     async ({ page }) => {
+      // Arrange - use the current page configuration from the test data above
+
+      // Act
       const response = await page.goto(path);
 
+      // Assert
       expect(response).not.toBeNull();
       expect(response?.ok()).toBe(true);
       await expect(page.locator('body')).toBeVisible();
@@ -64,13 +68,17 @@ test(
   'should load and display the Swagger page',
   { tag: '@smoke' },
   async ({ page }) => {
+    // Arrange
+    const swaggerTitle = page.frameLocator('iframe').locator('.title');
+
+    // Act
     const response = await page.goto('/swagger.html');
 
+    // Assert
     expect(response).not.toBeNull();
     expect(response?.ok()).toBe(true);
     await expect(page.locator('body')).toBeVisible();
     await expect(page).toHaveTitle('Rolnopol - Swagger');
-    const swaggerTitle = page.frameLocator('iframe').locator('.title');
 
     await expect(swaggerTitle).toBeVisible();
     await expect(swaggerTitle).toContainText('Rolnopol');

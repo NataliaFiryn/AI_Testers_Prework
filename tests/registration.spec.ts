@@ -4,17 +4,19 @@ test(
   'should register a new user successfully',
   { tag: '@registration' },
   async ({ page }, testInfo) => {
+    // Arrange
     const email = `playwright.registration.${Date.now()}.${testInfo.workerIndex}@example.com`;
+    const successBanner = page.getByRole('alert');
 
     await page.goto('/register.html');
 
+    // Act
     await page.getByTestId('email-input').fill(email);
     await page
       .getByTestId('display-name-input')
       .fill('Playwright Registration Test');
     await page.getByTestId('password-input').fill('TestReg-2026!');
 
-    const successBanner = page.getByRole('alert');
     const [registrationResponse] = await Promise.all([
       page.waitForResponse(
         (response) =>
@@ -25,6 +27,7 @@ test(
       page.getByTestId('register-submit-btn').click()
     ]);
 
+    // Assert
     expect(registrationResponse.status()).toBe(201);
     await expect(page).toHaveURL('/login.html');
     await expect(
