@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { ContentPage } from '../pages/content.page';
-import { SwaggerPage } from '../pages/swagger.page';
+import { ContentPage } from '../src/pages/content.page';
+import { SwaggerPage } from '../src/pages/swagger.page';
 
 for (const { name, path, title, headerText, additionalText } of [
   {

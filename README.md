@@ -24,8 +24,8 @@ npm run format:check
 
 ## Struktura
 
-- `tests/` - testy Playwright
-- `pages/` - Page Object Model lub komponenty stron
-- `fixtures/` - wspolne fixture testowe
-- `test-data/` - dane testowe
-- `utils/` - pomocnicze funkcje testowe
+- `src/pages/` - Page Objecty i komponenty stron
+- `src/fixtures/` - wlasne fixture Playwrighta
+- `src/utils/` - funkcje pomocnicze
+- `test-data/` - statyczne dane i pliki uzywane przez testy
+- `tests/` - scenariusze testowe Playwright

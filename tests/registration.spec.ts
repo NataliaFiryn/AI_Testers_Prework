@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { RegistrationPage } from '../pages/registration.page';
+import { RegistrationPage } from '../src/pages/registration.page';
 
 test(
   'should register a new user successfully',
