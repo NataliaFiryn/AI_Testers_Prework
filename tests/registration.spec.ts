@@ -1,12 +1,13 @@
 import { expect, test } from '@playwright/test';
 import { RegistrationPage } from '../src/pages/registration.page';
+import { generateRegistrationEmail } from '../src/utils/generate-registration-email';
 
 test(
   'should register a new user successfully',
   { tag: '@registration' },
   async ({ page }, testInfo) => {
     // Arrange
-    const email = `playwright.registration.${Date.now()}.${testInfo.workerIndex}@example.com`;
+    const email = generateRegistrationEmail(testInfo.workerIndex);
     const registrationPage = new RegistrationPage(page);
 
     await registrationPage.goto();
