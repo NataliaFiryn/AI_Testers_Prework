@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { PAGE_URLS } from '../src/constants/page-urls';
 import { LoginPage } from '../src/pages/login.page';
 import { RegistrationPage } from '../src/pages/registration.page';
 import { generateRegistrationEmail } from '../src/utils/generate-registration-email';
@@ -26,7 +27,7 @@ test(
     await expect(registrationPage.successBanner).toContainText(
       'Registration successful!'
     );
-    await expect(page).toHaveURL('/login.html');
+    await expect(page).toHaveURL(PAGE_URLS.login);
     await expect(loginPage.pageTitle).toBeVisible();
   }
 );
