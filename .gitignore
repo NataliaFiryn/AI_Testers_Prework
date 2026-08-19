@@ -31,3 +31,4 @@ Thumbs.db
 # Local AI/tooling state
 .agents/
 .codex/
+.playwright-mcp/

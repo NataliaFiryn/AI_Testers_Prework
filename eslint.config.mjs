@@ -28,7 +28,7 @@ export default [
   },
   {
     ...playwright.configs['flat/recommended'],
-    files: ['tests/**/*.ts', 'fixtures/**/*.ts'],
+    files: ['tests/**/*.ts', 'src/fixtures/**/*.ts'],
     rules: {
       ...playwright.configs['flat/recommended'].rules,
       'playwright/no-raw-locators': 'warn',
