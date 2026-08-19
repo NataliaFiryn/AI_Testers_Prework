@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator, Page, Response } from '@playwright/test';
 
 export class RegistrationPage {
   readonly successBanner: Locator;
@@ -24,10 +24,19 @@ export class RegistrationPage {
     email: string,
     displayName: string,
     password: string
-  ): Promise<void> {
+  ): Promise<Response> {
     await this.emailInput.fill(email);
     await this.displayNameInput.fill(displayName);
     await this.passwordInput.fill(password);
+
+    const registrationResponsePromise = this.page.waitForResponse(
+      (response) =>
+        response.url().endsWith('/api/v1/register') &&
+        response.request().method() === 'POST'
+    );
+
     await this.submitButton.click();
+
+    return registrationResponsePromise;
   }
 }

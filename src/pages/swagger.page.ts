@@ -1,11 +1,9 @@
 import type { Locator, Page, Response } from '@playwright/test';
 
 export class SwaggerPage {
-  readonly body: Locator;
   readonly swaggerTitle: Locator;
 
   constructor(private readonly page: Page) {
-    this.body = page.locator('body');
     this.swaggerTitle = page.frameLocator('iframe').locator('.title');
   }
 

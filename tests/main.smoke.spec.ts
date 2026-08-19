@@ -45,7 +45,6 @@ for (const { name, path, title, headerText, additionalText } of [
       // Assert
       expect(response).not.toBeNull();
       expect(response?.ok()).toBe(true);
-      await expect(contentPage.body).toBeVisible();
       await expect(page).toHaveTitle(title);
       await expect(contentPage.mainTitle).toBeVisible();
       await expect(contentPage.mainTitle).toHaveText(headerText);
@@ -67,7 +66,6 @@ test(
     // Assert
     expect(response).not.toBeNull();
     expect(response?.ok()).toBe(true);
-    await expect(swaggerPage.body).toBeVisible();
     await expect(page).toHaveTitle('Rolnopol - Swagger');
 
     await expect(swaggerPage.swaggerTitle).toBeVisible();
