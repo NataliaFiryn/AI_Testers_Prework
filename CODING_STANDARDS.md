@@ -15,11 +15,18 @@ This document is the single source of truth for implementation and testing conve
 - Use single quotes and omit trailing commas, as configured by Prettier.
 - Do not manually format code in a way that conflicts with the formatter.
 
+## Comments and documentation
+
+- Prefer clear names and small, focused units over comments that restate what the code does.
+- Remove obvious, redundant, stale, or commented-out code comments.
+- Use concise JSDoc only when it explains non-obvious intent, important context, an architectural boundary, or a public contract that types and names do not communicate clearly.
+- Keep comments accurate and close to the code they explain.
+
 ## Testing
 
 - Use the Playwright Test framework for automated tests.
 - Follow the settings and conventions in `playwright.config.ts`.
-- Structure each test using the Arrange, Act, Assert pattern. Mark the corresponding sections with `// Arrange`, `// Act`, and `// Assert` comments.
+- Structure each test using the Arrange, Act, Assert pattern. Separate the phases with blank lines when that improves readability; do not add labels that merely restate the phase.
 - Keep assertions and verifications in test files. Do not place them in Page Objects.
 - Prefer Playwright web-first assertions and do not use fixed timeouts, in accordance with `eslint.config.mjs`.
 

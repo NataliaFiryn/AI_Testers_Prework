@@ -37,13 +37,10 @@ for (const { name, path, title, headerText, additionalText } of [
     `should load and display the ${name} page`,
     { tag: '@smoke' },
     async ({ page }) => {
-      // Arrange
       const contentPage = new ContentPage(page, path);
 
-      // Act
       const response = await contentPage.goto();
 
-      // Assert
       expect(response).not.toBeNull();
       expect(response?.ok()).toBe(true);
       await expect(page).toHaveTitle(title);
@@ -58,13 +55,10 @@ test(
   'should load and display the Swagger page',
   { tag: '@smoke' },
   async ({ page }) => {
-    // Arrange
     const swaggerPage = new SwaggerPage(page);
 
-    // Act
     const response = await swaggerPage.goto();
 
-    // Assert
     expect(response).not.toBeNull();
     expect(response?.ok()).toBe(true);
     await expect(page).toHaveTitle('Rolnopol - Swagger');

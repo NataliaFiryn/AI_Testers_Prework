@@ -8,21 +8,18 @@ test(
   'should register a new user successfully',
   { tag: '@registration' },
   async ({ page }, testInfo) => {
-    // Arrange
     const email = generateRegistrationEmail(testInfo.workerIndex);
     const registrationPage = new RegistrationPage(page);
     const loginPage = new LoginPage(page);
 
     await registrationPage.goto();
 
-    // Act
     const registrationResponse = await registrationPage.register(
       email,
       'Playwright Registration Test',
       'TestReg-2026!'
     );
 
-    // Assert
     expect(registrationResponse.status()).toBe(201);
     await expect(registrationPage.successBanner).toContainText(
       'Registration successful!'
