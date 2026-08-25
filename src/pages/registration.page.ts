@@ -1,6 +1,8 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator, Page, Response } from '@playwright/test';
+import { PAGE_URLS } from '../constants/page-urls';
+import { BasePage } from './base.page';
 
-export class RegistrationPage {
+export class RegistrationPage extends BasePage {
   readonly successBanner: Locator;
 
   private readonly emailInput: Locator;
@@ -8,7 +10,8 @@ export class RegistrationPage {
   private readonly passwordInput: Locator;
   private readonly submitButton: Locator;
 
-  constructor(private readonly page: Page) {
+  constructor(page: Page) {
+    super(page, PAGE_URLS.registration);
     this.emailInput = page.getByTestId('email-input');
     this.displayNameInput = page.getByTestId('display-name-input');
     this.passwordInput = page.getByTestId('password-input');
@@ -16,18 +19,23 @@ export class RegistrationPage {
     this.successBanner = page.getByRole('alert');
   }
 
-  async goto(): Promise<void> {
-    await this.page.goto('/register.html');
-  }
-
   async register(
     email: string,
     displayName: string,
     password: string
-  ): Promise<void> {
+  ): Promise<Response> {
     await this.emailInput.fill(email);
     await this.displayNameInput.fill(displayName);
     await this.passwordInput.fill(password);
+
+    const registrationResponsePromise = this.page.waitForResponse(
+      (response) =>
+        response.url().endsWith('/api/v1/register') &&
+        response.request().method() === 'POST'
+    );
+
     await this.submitButton.click();
+
+    return registrationResponsePromise;
   }
 }

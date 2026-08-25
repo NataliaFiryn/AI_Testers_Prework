@@ -1,19 +1,16 @@
-import type { Locator, Page, Response } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
+import type { PageUrl } from '../constants/page-urls';
+import { BasePage } from './base.page';
 
-export class ContentPage {
-  readonly body: Locator;
+export class ContentPage extends BasePage {
   readonly mainTitle: Locator;
 
   private readonly header: Locator;
 
-  constructor(private readonly page: Page) {
-    this.body = page.locator('body');
+  constructor(page: Page, url: PageUrl) {
+    super(page, url);
     this.mainTitle = page.locator('.main-title');
     this.header = page.locator('header');
-  }
-
-  async goto(path: string): Promise<Response | null> {
-    return this.page.goto(path);
   }
 
   headerText(text: string): Locator {
