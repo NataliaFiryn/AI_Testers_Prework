@@ -1,10 +1,38 @@
-import { expect, test, type Locator } from '@playwright/test';
+import {
+  expect,
+  test as base,
+  type Locator,
+  type Request
+} from '@playwright/test';
 import { PAGE_URLS } from '../src/constants/page-urls';
 import { LoginPage } from '../src/pages/login.page';
 import { RegistrationPage } from '../src/pages/registration.page';
 import { generateRegistrationEmail } from '../src/utils/generate-registration-email';
 
 type NativeValidityFlag = 'valueMissing' | 'typeMismatch' | 'tooShort';
+
+type RegistrationFixtures = {
+  registrationPage: RegistrationPage;
+  registrationRequests: Request[];
+};
+
+const test = base.extend<RegistrationFixtures>({
+  registrationPage: async ({ page }, use) => {
+    await use(new RegistrationPage(page));
+  },
+  registrationRequests: async ({ page }, use) => {
+    const requests: Request[] = [];
+    page.on('request', (request) => {
+      if (
+        request.url().endsWith('/api/v1/register') &&
+        request.method() === 'POST'
+      ) {
+        requests.push(request);
+      }
+    });
+    await use(requests);
+  }
+});
 
 const expectNativeValidationMessage = async (
   input: Locator,
@@ -27,23 +55,31 @@ const expectNativeValidationMessage = async (
     .not.toBe('');
 };
 
+const expectNoRegistrationRequest = (requests: Request[]): void => {
+  expect(requests).toHaveLength(0);
+};
+
 test(
   'should register a new user successfully',
   { tag: ['@registration', '@positive'] },
-  async ({ page }, testInfo) => {
+  async ({ page, registrationPage }, testInfo) => {
     const email = generateRegistrationEmail(testInfo.workerIndex);
-    const registrationPage = new RegistrationPage(page);
     const loginPage = new LoginPage(page);
 
     await registrationPage.goto();
 
     const registrationResponse = await registrationPage.register(
       email,
-      'Playwright Registration Test',
+      'Playwright Test',
       'TestReg-2026!'
     );
 
     expect(registrationResponse.status()).toBe(201);
+    expect(registrationResponse.request().postDataJSON()).toEqual({
+      email,
+      displayedName: 'Playwright Test',
+      password: 'TestReg-2026!'
+    });
     await expect(registrationPage.successBanner).toContainText(
       'Registration successful!'
     );
@@ -56,12 +92,15 @@ test.describe(
   'registration validation',
   { tag: ['@registration', '@negative'] },
   () => {
-    test.beforeEach(async ({ page }) => {
-      await new RegistrationPage(page).goto();
+    test.beforeEach(async ({ registrationPage }) => {
+      await registrationPage.goto();
     });
 
-    test('should require an email address', async ({ page }) => {
-      const registrationPage = new RegistrationPage(page);
+    test('should require an email address', async ({
+      page,
+      registrationPage,
+      registrationRequests
+    }) => {
       await registrationPage.fillRegistrationForm('', 'Valid User', 'abc');
 
       await registrationPage.submit();
@@ -72,10 +111,14 @@ test.describe(
       );
       await expect(registrationPage.emailInput).toBeFocused();
       await expect(page).toHaveURL(PAGE_URLS.registration);
+      expectNoRegistrationRequest(registrationRequests);
     });
 
-    test('should reject a whitespace-only email address', async ({ page }) => {
-      const registrationPage = new RegistrationPage(page);
+    test('should reject a whitespace-only email address', async ({
+      page,
+      registrationPage,
+      registrationRequests
+    }) => {
       await registrationPage.fillRegistrationForm('   ', 'Valid User', 'abc');
 
       await registrationPage.submit();
@@ -87,6 +130,7 @@ test.describe(
       );
       await expect(registrationPage.emailInput).toBeFocused();
       await expect(page).toHaveURL(PAGE_URLS.registration);
+      expectNoRegistrationRequest(registrationRequests);
     });
 
     for (const invalidEmail of [
@@ -96,9 +140,10 @@ test.describe(
       'user name@example.com'
     ]) {
       test(`should reject malformed email ${invalidEmail}`, async ({
-        page
+        page,
+        registrationPage,
+        registrationRequests
       }) => {
-        const registrationPage = new RegistrationPage(page);
         await registrationPage.fillRegistrationForm(
           invalidEmail,
           'Valid User',
@@ -116,11 +161,15 @@ test.describe(
           registrationPage.alertWithText('Please enter a valid email address')
         ).toHaveText('Please enter a valid email address');
         await expect(page).toHaveURL(PAGE_URLS.registration);
+        expectNoRegistrationRequest(registrationRequests);
       });
     }
 
-    test('should reject an email without a domain suffix', async ({ page }) => {
-      const registrationPage = new RegistrationPage(page);
+    test('should reject an email without a domain suffix', async ({
+      page,
+      registrationPage,
+      registrationRequests
+    }) => {
       await registrationPage.fillRegistrationForm(
         'user@example',
         'Valid User',
@@ -133,14 +182,18 @@ test.describe(
         registrationPage.alertWithText('Please enter a valid email address')
       ).toHaveText('Please enter a valid email address');
       await expect(page).toHaveURL(PAGE_URLS.registration);
+      expectNoRegistrationRequest(registrationRequests);
     });
 
-    test('should require a password', async ({ page }, testInfo) => {
+    test('should require a password', async ({
+      page,
+      registrationPage,
+      registrationRequests
+    }, testInfo) => {
       const email = generateRegistrationEmail(
         testInfo.workerIndex,
         'password-required'
       );
-      const registrationPage = new RegistrationPage(page);
       await registrationPage.fillRegistrationForm(email, 'Valid User', '');
 
       await registrationPage.submit();
@@ -153,16 +206,18 @@ test.describe(
         registrationPage.alertWithText('Password is required')
       ).toHaveText('Password is required');
       await expect(page).toHaveURL(PAGE_URLS.registration);
+      expectNoRegistrationRequest(registrationRequests);
     });
 
     test('should reject a password below the minimum length', async ({
-      page
+      page,
+      registrationPage,
+      registrationRequests
     }, testInfo) => {
       const email = generateRegistrationEmail(
         testInfo.workerIndex,
         'short-password'
       );
-      const registrationPage = new RegistrationPage(page);
       await registrationPage.fillRegistrationForm(email, 'Valid User', 'ab');
 
       await registrationPage.submit();
@@ -175,16 +230,18 @@ test.describe(
         registrationPage.alertWithText('Password must be at least 3 characters')
       ).toHaveText('Password must be at least 3 characters');
       await expect(page).toHaveURL(PAGE_URLS.registration);
+      expectNoRegistrationRequest(registrationRequests);
     });
 
     test('should reject a display name below the minimum length', async ({
-      page
+      page,
+      registrationPage,
+      registrationRequests
     }, testInfo) => {
       const email = generateRegistrationEmail(
         testInfo.workerIndex,
         'short-name'
       );
-      const registrationPage = new RegistrationPage(page);
       await registrationPage.fillRegistrationForm(email, 'ab', 'abc');
 
       await registrationPage.submit();
@@ -199,16 +256,18 @@ test.describe(
         )
       ).toHaveText('Display name must be at least 3 characters');
       await expect(page).toHaveURL(PAGE_URLS.registration);
+      expectNoRegistrationRequest(registrationRequests);
     });
 
     test('should reject a whitespace-only display name', async ({
-      page
+      page,
+      registrationPage,
+      registrationRequests
     }, testInfo) => {
       const email = generateRegistrationEmail(
         testInfo.workerIndex,
         'blank-name'
       );
-      const registrationPage = new RegistrationPage(page);
       await registrationPage.fillRegistrationForm(email, '   ', 'abc');
 
       await registrationPage.submit();
@@ -219,18 +278,22 @@ test.describe(
         )
       ).toHaveText('Display name must be at least 3 characters');
       await expect(page).toHaveURL(PAGE_URLS.registration);
+      expectNoRegistrationRequest(registrationRequests);
     });
 
     for (const { name, displayName } of [
       { name: 'punctuation', displayName: 'User!' },
       { name: 'non-ASCII letters', displayName: 'Łukasz' }
     ]) {
-      test(`should reject display-name ${name}`, async ({ page }, testInfo) => {
+      test(`should reject display-name ${name}`, async ({
+        page,
+        registrationPage,
+        registrationRequests
+      }, testInfo) => {
         const email = generateRegistrationEmail(
           testInfo.workerIndex,
           `invalid-name-${name.replaceAll(' ', '-')}`
         );
-        const registrationPage = new RegistrationPage(page);
         await registrationPage.fillRegistrationForm(email, displayName, 'abc');
 
         await registrationPage.submit();
@@ -243,12 +306,13 @@ test.describe(
           'Display name can only contain letters, numbers, spaces, hyphens, and underscores'
         );
         await expect(page).toHaveURL(PAGE_URLS.registration);
+        expectNoRegistrationRequest(registrationRequests);
       });
     }
 
-    test('should limit the display name to 20 characters', async ({ page }) => {
-      const registrationPage = new RegistrationPage(page);
-
+    test('should limit the display name to 20 characters', async ({
+      registrationPage
+    }) => {
       await registrationPage.typeDisplayName('a'.repeat(21));
 
       await expect(registrationPage.displayNameInput).toHaveValue(
@@ -258,13 +322,13 @@ test.describe(
 
     test('should reject registration for an existing email', async ({
       page,
-      request
+      request,
+      registrationPage
     }, testInfo) => {
       const email = generateRegistrationEmail(
         testInfo.workerIndex,
         'duplicate'
       );
-      const registrationPage = new RegistrationPage(page);
       const seedResponse = await request.post('/api/v1/register', {
         data: {
           email,
@@ -298,9 +362,8 @@ test.describe(
 test(
   'should trim email whitespace around a valid address',
   { tag: ['@registration', '@positive'] },
-  async ({ page }, testInfo) => {
+  async ({ page, registrationPage }, testInfo) => {
     const email = generateRegistrationEmail(testInfo.workerIndex, 'trim-email');
-    const registrationPage = new RegistrationPage(page);
     await registrationPage.goto();
     await registrationPage.fillRegistrationForm(
       `  ${email}  `,
@@ -325,12 +388,11 @@ test(
 test(
   'should trim a valid display name before registration',
   { tag: ['@registration', '@positive'] },
-  async ({ page }, testInfo) => {
+  async ({ page, registrationPage }, testInfo) => {
     const email = generateRegistrationEmail(
       testInfo.workerIndex,
       'name-boundary'
     );
-    const registrationPage = new RegistrationPage(page);
     await registrationPage.goto();
     await registrationPage.fillRegistrationForm(email, '  Valid_Name  ', 'abc');
 
@@ -341,6 +403,32 @@ test(
     expect(registrationResponse.request().postDataJSON()).toEqual({
       email,
       displayedName: 'Valid_Name',
+      password: 'abc'
+    });
+    await expect(registrationPage.successBanner).toContainText(
+      'Registration successful!'
+    );
+    await expect(page).toHaveURL(PAGE_URLS.login);
+  }
+);
+
+test(
+  'should register without an optional display name',
+  { tag: ['@registration', '@positive'] },
+  async ({ page, registrationPage }, testInfo) => {
+    const email = generateRegistrationEmail(
+      testInfo.workerIndex,
+      'without-display-name'
+    );
+    await registrationPage.goto();
+    await registrationPage.fillRegistrationForm(email, '', 'abc');
+
+    const registrationResponse =
+      await registrationPage.submitAndWaitForRegistrationResponse();
+
+    expect(registrationResponse.status()).toBe(201);
+    expect(registrationResponse.request().postDataJSON()).toEqual({
+      email,
       password: 'abc'
     });
     await expect(registrationPage.successBanner).toContainText(
