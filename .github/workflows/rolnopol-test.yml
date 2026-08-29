@@ -3,8 +3,8 @@ name: Rolnopol Docker Image Test
 on:
   # push:
   #   branches: [main, master]
-  # pull_request:
-  #   branches: [main, master]
+  pull_request:
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
@@ -40,3 +40,12 @@ jobs:
 
       - name: Run Playwright tests
         run: npm test -- --project=chromium
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: playwright-report/
+          if-no-files-found: warn
+          retention-days: 14
