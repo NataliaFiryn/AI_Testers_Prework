@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { PAGE_URLS } from '../src/constants/page-urls';
+import { createUser } from '../src/models/user';
 import { ContentPage } from '../src/pages/content.page';
 import { LoginPage } from '../src/pages/login.page';
 import { ProfilePage } from '../src/pages/profile.page';
@@ -11,10 +12,11 @@ test(
     const loginPage = new LoginPage(page);
     const profilePage = new ProfilePage(page);
     const homePage = new ContentPage(page, PAGE_URLS.home);
+    const user = createUser();
 
     await loginPage.goto();
 
-    await loginPage.login('emptyuser@rolnopol.demo.pl', 'demoPass123');
+    await loginPage.login(user.email, user.password);
 
     await expect(page).toHaveURL(PAGE_URLS.profile);
     await expect(page).toHaveTitle('Profile - Rolnopol');
