@@ -2,7 +2,7 @@
 
 ## Objective
 
-Check that the main Rolnopol features work according to the official documentation at `http://localhost:3000/docs.html`.
+Check that the main Rolnopol features work according to the official documentation at `<BASE_URL>/docs.html`.
 
 ## Scope
 
@@ -17,7 +17,7 @@ Performance and security audits are not included.
 
 ## Test setup
 
-- Application: `http://localhost:3000`
+- Application: configured through `BASE_URL` in the local `.env` file or the CI environment
 - Browser: Chromium
 - Use at least two demo accounts for marketplace scenarios
 - Use `emptyuser@rolnopol.demo.pl` / `demoPass123` for an account without resources
