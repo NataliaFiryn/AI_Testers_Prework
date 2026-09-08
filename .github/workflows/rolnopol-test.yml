@@ -18,8 +18,10 @@ jobs:
     environment: rolnopol
     env:
       BASE_URL: ${{ vars.BASE_URL }}
-      USER_EMAIL: ${{ vars.USER_EMAIL }}
-      USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+      EMPTY_USER_EMAIL: ${{ vars.EMPTY_USER_EMAIL }}
+      EMPTY_USER_PASSWORD: ${{ secrets.EMPTY_USER_PASSWORD }}
+      DEMO_USER_EMAIL: ${{ vars.DEMO_USER_EMAIL }}
+      DEMO_USER_PASSWORD: ${{ secrets.DEMO_USER_PASSWORD }}
 
     services:
       rolnopol:
