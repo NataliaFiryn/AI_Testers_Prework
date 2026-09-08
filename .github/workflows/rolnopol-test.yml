@@ -19,7 +19,7 @@ jobs:
     env:
       BASE_URL: ${{ vars.BASE_URL }}
       EMPTY_USER_EMAIL: ${{ vars.EMPTY_USER_EMAIL }}
-      USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+      EMPTY_USER_PASSWORD: ${{ secrets.EMPTY_USER_PASSWORD }}
 
     services:
       rolnopol:
