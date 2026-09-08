@@ -40,5 +40,7 @@ export const environment = Object.freeze({
   baseUrl: getBaseUrl(),
   userEmail: getRequiredEnvironmentVariable('EMPTY_USER_EMAIL'),
   userPassword: getRequiredEnvironmentVariable('EMPTY_USER_PASSWORD'),
+  demoUserEmail: getRequiredEnvironmentVariable('DEMO_USER_EMAIL'),
+  demoUserPassword: getRequiredEnvironmentVariable('DEMO_USER_PASSWORD'),
   isCi: process.env.CI === 'true'
 });

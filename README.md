@@ -13,10 +13,7 @@ cp .env.example .env
 npm test
 ```
 
-Plik `.env` jest lokalny i nie jest zapisywany w repozytorium. Ustaw w nim
-`BASE_URL` na adres testowanej aplikacji. Playwright przerwie uruchamianie z
-czytelnym komunikatem, jezeli zmienna nie istnieje lub nie zawiera poprawnego
-adresu HTTP/HTTPS.
+Plik `.env` jest lokalny i nie jest zapisywany w repozytorium.
 
 ## Przydatne komendy
 

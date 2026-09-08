@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { PAGE_URLS } from '../src/constants/page-urls';
-import { createUser } from '../src/models/user';
+import { DEMO_USER } from '../src/models/user';
 import { ContentPage } from '../src/pages/content.page';
 import { LoginPage } from '../src/pages/login.page';
 import { ProfilePage } from '../src/pages/profile.page';
@@ -12,7 +12,7 @@ test(
     const loginPage = new LoginPage(page);
     const profilePage = new ProfilePage(page);
     const homePage = new ContentPage(page, PAGE_URLS.home);
-    const user = createUser();
+    const user = DEMO_USER;
 
     await loginPage.goto();
 

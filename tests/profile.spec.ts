@@ -1,18 +1,14 @@
 import { expect, test } from '@playwright/test';
 import { PAGE_URLS } from '../src/constants/page-urls';
-import { createUser } from '../src/models/user';
+import { EMPTY_USER } from '../src/models/user';
 import { LoginPage } from '../src/pages/login.page';
 import { ProfilePage } from '../src/pages/profile.page';
 
 interface ProfileData {
   id: number;
-  username: string;
   displayedName: string;
   email: string;
   isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  lastLogin: string;
 }
 
 interface ProfileResponse {
@@ -26,7 +22,7 @@ test(
   async ({ page }) => {
     const loginPage = new LoginPage(page);
     const profilePage = new ProfilePage(page);
-    const user = createUser();
+    const user = EMPTY_USER;
 
     await loginPage.goto();
     const profileResponsePromise = page.waitForResponse(

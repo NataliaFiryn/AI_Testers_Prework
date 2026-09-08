@@ -5,9 +5,12 @@ export interface User {
   password: string;
 }
 
-export const createUser = (overrides: Partial<User> = {}): User => {
-  return {
-    email: overrides.email ?? environment.userEmail,
-    password: overrides.password ?? environment.userPassword
-  };
-};
+export const EMPTY_USER: Readonly<User> = Object.freeze({
+  email: environment.userEmail,
+  password: environment.userPassword
+});
+
+export const DEMO_USER: Readonly<User> = Object.freeze({
+  email: environment.demoUserEmail,
+  password: environment.demoUserPassword
+});
