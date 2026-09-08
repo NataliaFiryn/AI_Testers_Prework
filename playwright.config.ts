@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { DEMO_USER_AUTH_STATE_PATH } from './src/constants/authentication';
 import { environment } from './src/config/environment';
 
 export default defineConfig({
@@ -19,8 +20,28 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'chromium',
+      name: 'setup',
+      testMatch: '**/auth/demo-user.setup.ts',
       use: { ...devices['Desktop Chrome'] }
+    },
+    {
+      name: 'smoke-tests',
+      testMatch: '**/main.smoke.spec.ts',
+      use: { ...devices['Desktop Chrome'] }
+    },
+    {
+      name: 'public-tests',
+      testMatch: ['**/profile.spec.ts', '**/registration.spec.ts'],
+      use: { ...devices['Desktop Chrome'] }
+    },
+    {
+      name: 'demo-user',
+      testMatch: '**/auth/**/*.spec.ts',
+      dependencies: ['setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: DEMO_USER_AUTH_STATE_PATH
+      }
     }
   ]
 });

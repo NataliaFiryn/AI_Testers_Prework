@@ -73,7 +73,7 @@ jobs:
           exit 1
 
       - name: Run Playwright tests
-        run: npm test -- --project=chromium
+        run: npm test
 
       - name: Upload Playwright HTML report
         if: success() || failure()

@@ -20,10 +20,17 @@ Plik `.env` jest lokalny i nie jest zapisywany w repozytorium.
 ```bash
 npm run test:ui
 npm run test:headed
+npx playwright test --project=smoke-tests
+npx playwright test --project=demo-user
 npm run lint
 npm run typecheck
 npm run format:check
 ```
+
+Projekt `smoke-tests` uruchamia szybkie testy podstawowego stanu aplikacji bez
+logowania. Projekt `demo-user` najpierw uruchamia projekt `setup`, ktory zapisuje
+lokalny stan uwierzytelnienia w `playwright/.auth/user.json`. Ten plik jest
+generowany automatycznie i nie jest zapisywany w repozytorium.
 
 ## Struktura
 
@@ -31,4 +38,5 @@ npm run format:check
 - `src/fixtures/` - wlasne fixture Playwrighta
 - `src/utils/` - funkcje pomocnicze
 - `test-data/` - statyczne dane i pliki uzywane przez testy
+- `tests/auth/` - konfiguracja sesji i testy wymagajace konta DEMO_USER
 - `tests/` - scenariusze testowe Playwright
