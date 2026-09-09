@@ -5,6 +5,7 @@ export const PAGE_URLS = {
   registration: '/register.html',
   login: '/login.html',
   profile: '/profile.html',
+  staffFields: '/staff-fields-main.html',
   swagger: '/swagger.html'
 } as const;
 
