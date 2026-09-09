@@ -6,11 +6,19 @@ export interface User {
 }
 
 export const EMPTY_USER: Readonly<User> = Object.freeze({
-  email: environment.userEmail,
-  password: environment.userPassword
+  get email(): string {
+    return environment.userEmail;
+  },
+  get password(): string {
+    return environment.userPassword;
+  }
 });
 
 export const DEMO_USER: Readonly<User> = Object.freeze({
-  email: environment.demoUserEmail,
-  password: environment.demoUserPassword
+  get email(): string {
+    return environment.demoUserEmail;
+  },
+  get password(): string {
+    return environment.demoUserPassword;
+  }
 });
