@@ -36,12 +36,18 @@ export default defineConfig({
     },
     {
       name: 'demo-user',
-      testMatch: '**/auth/**/*.spec.ts',
+      testMatch: '**/auth/staff-fields.spec.ts',
       dependencies: ['setup'],
       use: {
         ...devices['Desktop Chrome'],
         storageState: DEMO_USER_AUTH_STATE_PATH
       }
+    },
+    {
+      name: 'demo-user-logout',
+      testMatch: '**/auth/demo-user.spec.ts',
+      dependencies: ['demo-user'],
+      use: { ...devices['Desktop Chrome'] }
     }
   ]
 });

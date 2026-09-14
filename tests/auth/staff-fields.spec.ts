@@ -29,8 +29,7 @@ for (const { kind, tag, readyText } of scenarios) {
 
     test.afterEach(async ({ page }) => {
       const management = new StaffFieldsPage(page);
-      await management.goto();
-      await expect.soft(management.list(kind)).toContainText(readyText);
+      await expect(management.list(kind)).toContainText(readyText);
       await management.search(kind, searchTerm);
       const record = management.record(kind, recordName);
 
@@ -58,16 +57,31 @@ for (const { kind, tag, readyText } of scenarios) {
         .toContainText(
           `Are you sure you want to delete this ${kind.toLowerCase()}?`
         );
-      await management.confirmDeletion();
-      await expect.soft(management.confirmation).toBeHidden();
-      await expect.soft(record).toHaveCount(0);
+      const recordId = await record.getAttribute(
+        kind === 'Staff' ? 'data-staff-id' : 'data-field-id'
+      );
+      const deletionPath = `/api/v1/${kind === 'Staff' ? 'staff' : 'fields'}/${recordId}`;
+      const [deletionResponse] = await Promise.all([
+        page.waitForResponse(
+          (response) =>
+            response.request().method() === 'DELETE' &&
+            new URL(response.url()).pathname === deletionPath
+        ),
+        management.confirmDeletion()
+      ]);
+      expect(
+        deletionResponse.ok(),
+        `DELETE ${deletionPath} returned HTTP ${deletionResponse.status()}`
+      ).toBe(true);
+      await expect(management.confirmation).toBeHidden();
+      await expect(record).toHaveCount(0);
 
       await page.reload();
-      await expect.soft(management.list(kind)).toContainText(readyText);
+      await expect(management.list(kind)).toContainText(readyText);
       await management.search(kind, searchTerm);
-      await expect
-        .soft(management.list(kind))
-        .toHaveText(kind === 'Staff' ? 'No staff found.' : 'No fields found.');
+      await expect(management.list(kind)).toHaveText(
+        kind === 'Staff' ? 'No staff found.' : 'No fields found.'
+      );
       await expect.soft(record).toHaveCount(0);
     });
 
