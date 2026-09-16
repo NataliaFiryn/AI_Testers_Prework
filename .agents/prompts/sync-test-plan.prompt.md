@@ -2,4 +2,4 @@
 agent: agent
 ---
 
-Review `TEST_PLAN.md` against the Playwright tests in `tests/`, using their implementation and assertions to determine actual coverage. Update the plan to reflect automated, partial, and missing coverage, and add or correct scenarios where needed without modifying test code or inventing results. Summarize the changes and list the remaining coverage gaps.
+Use $playwright-test-plan-sync ([skill instructions](../skills/playwright-test-plan-sync/SKILL.md)) to synchronize `TEST_PLAN.md` with the Playwright tests in `tests/`. Summarize the changes and remaining coverage gaps.

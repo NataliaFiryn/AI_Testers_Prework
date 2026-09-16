@@ -1,0 +1,6 @@
+interface:
+  display_name: "Playwright Test Plan Sync"
+  short_description: "Map test-plan coverage to Playwright assertions"
+  default_prompt: "Use $playwright-test-plan-sync to synchronize TEST_PLAN.md with the implemented Playwright assertions and report remaining coverage gaps."
+policy:
+  allow_implicit_invocation: true
