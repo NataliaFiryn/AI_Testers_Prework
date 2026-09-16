@@ -52,6 +52,15 @@ Prettier i ESLint; ich instalacja nie zastepuje `npm run check`.
 W PowerShell z zablokowanymi skryptami uzyj `npm.cmd` i `npx.cmd` zamiast
 zmieniac systemowa polityke uruchamiania skryptow.
 
+CI uruchamia niezalezny job `Quality checks` obok istniejacego joba `test`
+dla pull requestow do `main`/`master` i przez `workflow_dispatch`.
+Oba uzywaja `npm ci` i Node z `.nvmrc`; hooki sa w CI wylaczone.
+Po udanej instalacji lint i kontrola typow uruchamiaja sie takze po bledzie
+formatowania, aby pokazac komplet wynikow. Job jakosci nie wymaga sekretow
+ani srodowiska `rolnopol`. Blad dowolnej kontroli powoduje niepowodzenie joba.
+Wymaganie `Quality checks` i `test` przed scaleniem nalezy ustawic w regulach
+ochrony galezi na GitHub; sam plik workflow nie blokuje przycisku merge.
+
 Projekt `smoke-tests` uruchamia szybkie testy podstawowego stanu aplikacji bez
 logowania. Projekt `demo-user` najpierw uruchamia projekt `setup`, ktory zapisuje
 lokalny stan uwierzytelnienia w `playwright/.auth/user.json`. Ten plik jest
