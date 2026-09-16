@@ -6,17 +6,25 @@ import prettier from 'eslint-config-prettier';
 
 export default [
   {
-    ignores: ['node_modules/', 'playwright-report/', 'test-results/', 'dist/']
+    ignores: [
+      '**/node_modules/**',
+      'playwright-report/**',
+      'test-results/**',
+      'blob-report/**',
+      'coverage/**',
+      'playwright/.auth/**',
+      'dist/**',
+      '.agents/**',
+      '.codex/**',
+      '.playwright-mcp/**',
+      '.vscode/**'
+    ]
   },
   js.configs.recommended,
   {
     files: ['**/*.ts'],
     languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        project: './tsconfig.json',
-        tsconfigRootDir: import.meta.dirname
-      }
+      parser: tsParser
     },
     plugins: {
       '@typescript-eslint': tseslint
