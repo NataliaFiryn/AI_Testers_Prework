@@ -3,3 +3,13 @@ package-lock.json
 playwright-report
 test-results
 dist
+blob-report
+coverage
+playwright/.auth
+.agents
+.codex
+.playwright-mcp
+.vscode
+.env
+.env.*
+*.log

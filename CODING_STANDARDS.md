@@ -14,6 +14,11 @@ This document is the single source of truth for implementation and testing conve
 - Format code with Prettier using `.prettierrc`.
 - Use single quotes and omit trailing commas, as configured by Prettier.
 - Do not manually format code in a way that conflicts with the formatter.
+- Use LF line endings, enforced by `.gitattributes` and Prettier.
+- Prettier covers project code, configuration, and documentation. Generated artifacts,
+  local editor/tool state, bundled `.agents/` resources, and the npm-managed lockfile
+  are excluded through `.prettierignore`.
+- Import sorting is not enforced; do not reorder imports solely for this workflow.
 
 ## Comments and documentation
 
@@ -47,7 +52,13 @@ Page Objects are stored in `src/pages/` as TypeScript classes. Each class receiv
 
 Run the checks relevant to the change:
 
+- `npm run check` runs formatting, lint, and type checks without modifying files.
 - `npm run format:check`
 - `npm run lint`
 - `npm run typecheck`
 - `npm test`, or a targeted Playwright test command when appropriate
+
+Use `npm run format` and `npm run lint:fix` for explicit fixes. ESLint uses
+syntax-aware TypeScript rules; `npm run typecheck` checks types across source,
+tests, and Playwright configuration. Playwright rules apply to tests and fixtures.
+Existing lint warnings remain advisory; lint errors fail validation.

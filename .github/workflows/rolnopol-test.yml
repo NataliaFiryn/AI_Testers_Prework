@@ -12,11 +12,44 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  quality:
+    name: Quality checks
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      HUSKY: '0'
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Install dependencies
+        id: dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: npm run lint
+
+      - name: Check types
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: npm run typecheck
+
   test:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     environment: rolnopol
     env:
+      HUSKY: '0'
       BASE_URL: ${{ vars.BASE_URL }}
       EMPTY_USER_EMAIL: ${{ vars.EMPTY_USER_EMAIL }}
       EMPTY_USER_PASSWORD: ${{ secrets.EMPTY_USER_PASSWORD }}
@@ -35,7 +68,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: npm
 
       - name: Install dependencies
